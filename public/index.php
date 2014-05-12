@@ -1,5 +1,14 @@
 <?
-	$request = substr($_SERVER['REQUEST_URI'],1);
+	//error_reporting(0);
+
+	foreach (glob('../controllers/*.php', GLOB_NOSORT) as $controller)
+		include $controller;
+
+	$app = new App;
+	$db = new Database;
+
+	$app->start();
+	$db->start();
 
 
 ?>
@@ -12,6 +21,6 @@
 
 	<body>
 		<h1>Frond Server Online</h1>
-		<p><?php echo $request; ?></p>
+		<p><?php echo 'Request: '.App::$request; ?></p>
 	</body>
 </html>
