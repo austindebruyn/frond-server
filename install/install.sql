@@ -1,0 +1,7 @@
+
+CREATE TABLE `dirs` (
+	id			INT PRIMARY KEY AUTO_INCREMENT
+	name 		VARCHAR(1024),
+	hash 		VARCHAR(32),
+	dirname 	VARCHAR(1024)
+)

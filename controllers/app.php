@@ -1,5 +1,4 @@
 <?
-
 class App {
 
 	private static $DEFAULT_APP_ERR = "An unknown error has occured.";
@@ -16,7 +15,10 @@ class App {
 	public static function abort($error_code = 500, $error_string) {
 		$title = "Error ".$error_code;
 		$content = $error_string ? $error_string : self::$DEFAULT_APP_ERR;
-		View::serve('abort');
+
+		$data = array('title' => $title, 'content' => $content);
+
+		View::serve('abort', $data);
 	}
 
 	/**
@@ -50,6 +52,14 @@ class App {
 	 */
 	public static function views_path() {
 		return '../views/';
+	}
+
+	/**
+	 * install_path()
+	 * returns the location of the install directory
+	 */
+	public static function install_path() {
+		return '../install/';
 	}
 
 }

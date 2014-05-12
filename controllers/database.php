@@ -1,8 +1,9 @@
 <?
-
 class Database {
 
 	private static $creds = array();
+	private static $stmt  = array();
+	private static $con;
 
 	/**
 	 * read_creds()
@@ -31,6 +32,7 @@ class Database {
 		self::$creds['db']   = isset($matches[3][1]) ? $matches[3][1] : '';
 	}
 
+
 	/**
 	 * start()
 	 * initializes the database
@@ -38,12 +40,29 @@ class Database {
 	public static function start() {
 
 		self::read_creds();
-		$con = new mysqli(self::$creds['host'],
+		self::$con = new mysqli(self::$creds['host'],
 						  self::$creds['user'],
 						  self::$creds['pass'],
 						  self::$creds['db']);
-		if (mysqli_connect_errno())
-			App::abort(500, "MySQL Error: " . mysqli_connect_error());
+
+	}
+
+	/**
+	 * check_hash()
+	 * @param hash
+	 * checks a given hash to see if it corresponds to a table entry. returns the dirname or false
+	 */
+	public static function check_hash($hash) {
+		$hash = substr($hash, 0, 32);
+
+		$stmt = self::$con->prepare('SELECT `dirname` FROM `dirs` WHERE `hash`=?');
+		$stmt->bind_param('s', $hash);
+		$stmt->execute();
+		$stmt->bind_result($dir);
+		$stmt->fetch();
+
+
+		return $dir;
 	}
 
 }
