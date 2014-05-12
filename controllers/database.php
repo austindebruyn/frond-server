@@ -55,14 +55,72 @@ class Database {
 	public static function check_hash($hash) {
 		$hash = substr($hash, 0, 32);
 
-		$stmt = self::$con->prepare('SELECT `dirname` FROM `dirs` WHERE `hash`=?');
+		$stmt = self::$con->prepare('SELECT `dirname`, `name` FROM `dirs` WHERE `hash`=?');
 		$stmt->bind_param('s', $hash);
 		$stmt->execute();
-		$stmt->bind_result($dir);
+		$stmt->bind_result($dir, $name);
 		$stmt->fetch();
 
+		if (! $dir)
+			return FALSE;
 
-		return $dir;
+		return array('dir' => $dir, 'name' => $name);
+	}
+
+	/**
+	 * get_download_link()
+	 * @param filename
+	 * returns the hashed download link to a file, or creates it if it doesn't exist
+	 */
+	public static function get_download_link($filename) {
+		$stmt = self::$con->prepare('SELECT `hash` FROM `files` WHERE `location`=?');
+		$stmt->bind_param('s', $filename);
+		$stmt->execute();
+		$stmt->bind_result($hash);
+		$stmt->fetch();
+
+		if (! $hash) {
+			$stmt = self::$con->prepare('INSERT INTO `files` (`location`, `hash`) VALUES (?, ?)');
+			$newhash = md5(App::$request.$filename);
+			$stmt->bind_param('ss', $filename, $newhash);
+			$stmt->execute();
+			return '/get/'.$newhash;
+		}
+
+		return '/get/'.$hash;
+	}
+
+	/**
+	 * serve_file()
+	 * @param filehash
+	 * downloads the requested file
+	 */
+	public static function serve_file($filehash) {
+		$stmt = self::$con->prepare('SELECT `location` FROM `files` WHERE `hash`=?');
+		$stmt->bind_param('s', $filehash);
+		$stmt->execute();
+		$stmt->bind_result($location);
+		$stmt->fetch();
+
+		if (! $location)
+			App::abort(404, 'File not found.');
+
+        $fsize = filesize($location);
+        $path_parts = pathinfo($location);
+
+        $fd = fopen ($location, "r");
+        
+        header("Content-type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=".$path_parts['basename']."");
+        header("Content-length: $fsize");
+        header("Transfer-length: $fsize");
+        header("Cache-control: private"); //use this to open files directly
+        while(!feof($fd)) {
+            $buffer = fread($fd, 2048);
+            echo $buffer;
+        }
+
+        exit;
 	}
 
 }

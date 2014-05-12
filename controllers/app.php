@@ -55,6 +55,14 @@ class App {
 	}
 
 	/**
+	 * files_path()
+	 * returns the location of the files directory
+	 */
+	public static function files_path() {
+		return '../files/';
+	}
+
+	/**
 	 * install_path()
 	 * returns the location of the install directory
 	 */
