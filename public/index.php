@@ -13,6 +13,13 @@
 	$matches = array();
 
 	//------------------------------------
+	// frond.com/license
+	//
+	if (App::$request == 'license' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+		View::serve('license');
+	}
+
+	//------------------------------------
 	// frond.com/activate
 	//
 	if (App::$request == 'activate' && $_SERVER['REQUEST_METHOD'] == 'GET') {

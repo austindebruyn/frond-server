@@ -121,3 +121,9 @@ footer li:last-child {
 	color: #F6E832;
 	letter-spacing: 2px;
 }
+
+#license {
+	width: 600px;
+	margin: 0 auto;
+	text-align: left;
+}
