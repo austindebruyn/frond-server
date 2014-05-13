@@ -96,6 +96,10 @@ class Database {
 	 * returns the hashed link to a page for a specific directory
 	 */
 	public static function get_dir_link($pagename, $dirname) {
+
+		if (strlen($dirname)<1 || !file_exists(App::files_path().$dirname))
+			return -1;
+
 		$stmt = self::$con->prepare('SELECT `hash` FROM `dirs` WHERE `dirname`=?');
 		$stmt->bind_param('s', $dirname);
 		$stmt->execute();
@@ -110,7 +114,7 @@ class Database {
 			$stmt->execute();
 		}
 
-		header('Location: /'.$hash);
+		return $hash;
 	}
 
 	/**

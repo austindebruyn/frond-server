@@ -19,13 +19,24 @@
 		View::serve('activate');
 	}
 
+	if (App::$request == 'activate' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+		$pagename = $_POST['pagename'];
+		$dirname = $_POST['dirname'];
+		die(Database::get_dir_link($pagename, $dirname));
+	}
+
 	if (App::$request == 'activate/noscript' && $_SERVER['REQUEST_METHOD'] == 'POST') {
 		if (!isset($_POST['pagename']) || !isset($_POST['dirname']))
 			App::abort(404);
 
 		$pagename = $_POST['pagename'];
 		$dirname = $_POST['dirname'];
-		Database::get_dir_link($pagename, $dirname);
+
+		$hash = Database::get_dir_link($pagename, $dirname);
+		if ($hash == -1)
+			App::abort(404, "That directory doesn't exist in the files dir.");
+		else
+			header('Location: /'.$hash);
 	}
 
 
