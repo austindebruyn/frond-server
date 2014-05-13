@@ -91,6 +91,29 @@ class Database {
 	}
 
 	/**
+	 * get_dir_link()
+	 * @param pagename
+	 * returns the hashed link to a page for a specific directory
+	 */
+	public static function get_dir_link($pagename, $dirname) {
+		$stmt = self::$con->prepare('SELECT `hash` FROM `dirs` WHERE `dirname`=?');
+		$stmt->bind_param('s', $dirname);
+		$stmt->execute();
+		$stmt->bind_result($hash);
+		$stmt->fetch();
+
+		if (! $hash) {
+			$hash = md5(rand().$dirname);
+			$stmt = self::$con->prepare('INSERT INTO `dirs` (`name`, `dirname`, `hash`) VALUES (?, ?, ?)');
+			$newhash = md5(App::$request.$filename);
+			$stmt->bind_param('sss', $pagename, $dirname, $hash);
+			$stmt->execute();
+		}
+
+		header('Location: /'.$hash);
+	}
+
+	/**
 	 * serve_file()
 	 * @param filehash
 	 * downloads the requested file
