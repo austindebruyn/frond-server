@@ -1,4 +1,4 @@
-<?
+<?php
 class App {
 
 	private static $DEFAULT_APP_ERR = "An unknown error has occured.";

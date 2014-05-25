@@ -1,4 +1,4 @@
-<?
+<?php
 class Database {
 
 	private static $creds = array();
