@@ -52,6 +52,9 @@ class Files {
 		foreach (glob(App::files_path().$dir.'/*', GLOB_NOSORT) as $fname)
 			array_push($filesList, new File($fname));
 
+		usort($filesList, function($a, $b) {
+			return strcmp($a->name, $b->name);
+		});
 
 		$data = array(
 			'name' => $name,
